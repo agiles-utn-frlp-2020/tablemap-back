@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8080",
+    "http://localhost:8082",
 ]
 
 # Application definition
@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # my apps
-    'apps.products.apps.ProductsConfig'    
+    'apps.products.apps.ProductsConfig',
+    'apps.tables.apps.TablesConfig'
 ]
 
 MIDDLEWARE = [
