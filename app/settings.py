@@ -47,7 +47,10 @@ INSTALLED_APPS = [
 
     # my apps
     'apps.products.apps.ProductsConfig',
-    'apps.tables.apps.TablesConfig'
+    'apps.tables.apps.TablesConfig',
+
+    # filtrado para products y tables
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -135,6 +138,12 @@ STATIC_URL = '/static/'
 
 # Django rest framework
 REST_FRAMEWORK = {
+
+
+    # filters para tables y products
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
+
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
     ]

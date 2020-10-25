@@ -10,4 +10,6 @@ router.register(r'tables', TableViewSet, basename='tables')
 
 urlpatterns = [
     path('v1/', include(router.urls)),
+    #  path('apis/', include('rest_framework.urls', namespace='rest_framework'))
+
 ]
