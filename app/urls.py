@@ -21,5 +21,4 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls'))
-    # path('tables/<int:id>/', views.TableView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # serve images in local development

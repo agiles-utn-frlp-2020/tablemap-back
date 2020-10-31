@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8080",
     "http://localhost:8082",
 ]
 
@@ -44,13 +45,12 @@ INSTALLED_APPS = [
     # third packages
     'rest_framework',
     'corsheaders',
+    'django_filters',
 
     # my apps
     'apps.products.apps.ProductsConfig',
     'apps.tables.apps.TablesConfig',
 
-    # filtrado para products y tables
-    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -138,13 +138,8 @@ STATIC_URL = '/static/'
 
 # Django rest framework
 REST_FRAMEWORK = {
-
-
-    # filters para tables y products
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-
-
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }

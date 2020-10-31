@@ -1,7 +1,6 @@
 from apps.products.models import Product
-from rest_framework import serializers
-
 from apps.tables.models import Table
+from rest_framework import serializers
 
 
 class ProductSerializer(serializers.ModelSerializer):
