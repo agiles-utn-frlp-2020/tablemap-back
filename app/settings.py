@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     # my apps
     'apps.products.apps.ProductsConfig',
     'apps.tables.apps.TablesConfig',
-
+    'apps.orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [

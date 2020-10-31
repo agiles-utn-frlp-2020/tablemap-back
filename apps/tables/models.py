@@ -1,12 +1,10 @@
 from django.db import models
 
-from apps.products.models import Product
-
 
 class Table(models.Model):
     x = models.IntegerField()
     y = models.IntegerField()
-    order = models.ForeignKey(Product, null=True, on_delete=models.CASCADE)
+    orders = models.ManyToManyField("products.Product", through="orders.Order", null=True)
     join_with = models.ManyToManyField("self", null=True)
 
     def __str__(self):
