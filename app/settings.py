@@ -34,7 +34,7 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.netlify\.app$",
+    r"^https://[^/?]+\.netlify\.app$",
 ]
 
 # Application definition
