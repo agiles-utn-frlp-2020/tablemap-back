@@ -152,3 +152,24 @@ class TableMapTests(APITestCase):
                 "join_with": None  # the 1to1 exist on the table moved
             }
         )
+
+        # unmerge the table
+        data = {
+            "join_with": None
+        }
+        response = self.client.patch(reverse("tables-detail", args=[Table.objects.first().id]), data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # get table
+        response = self.client.get(reverse("tables-detail", args=[Table.objects.first().id]), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(
+            response.json(),
+            {
+                "id": 1,
+                "x": 1,
+                "y": 1,
+                "orders": [1],
+                "join_with": None
+            }
+        )
