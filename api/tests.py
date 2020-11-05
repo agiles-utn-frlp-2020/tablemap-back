@@ -42,14 +42,14 @@ class TableMapTests(APITestCase):
                     "x": 1,
                     "y": 1,
                     "orders": [],
-                    "join_with": []
+                    "join_with": None
                 },
                 {
                     "id": 2,
                     "x": 2,
                     "y": 2,
                     "orders": [],
-                    "join_with": []
+                    "join_with": None
                 }
             ]
         )
@@ -114,13 +114,13 @@ class TableMapTests(APITestCase):
                 "x": 1,
                 "y": 1,
                 "orders": [1],
-                "join_with": []
+                "join_with": None
             }
         )
 
         # merge table 1 with table 2
         data = {
-            "join_with": [Table.objects.last().id]
+            "join_with": Table.objects.last().id
         }
         response = self.client.patch(reverse("tables-detail", args=[Table.objects.first().id]), data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -135,8 +135,20 @@ class TableMapTests(APITestCase):
                 "x": 1,
                 "y": 1,
                 "orders": [1],
-                "join_with": [2]
+                "join_with": 2
             }
         )
 
-
+        # get the other table merged
+        response = self.client.get(reverse("tables-detail", args=[Table.objects.last().id]), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(
+            response.json(),
+            {
+                "id": 2,
+                "x": 2,
+                "y": 2,
+                "orders": [],
+                "join_with": None  # the 1to1 exist on the table moved
+            }
+        )
