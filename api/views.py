@@ -1,7 +1,7 @@
 from apps.orders.models import Order
 from apps.products.models import Product
 from apps.tables.models import Table
-from django.contrib.auth import authenticate, login ,logout
+from django.contrib.auth import authenticate, login, logout
 from rest_framework import (mixins, response, routers, serializers, status,
                             views, viewsets)
 
