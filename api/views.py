@@ -1,7 +1,7 @@
 from apps.orders.models import Order
 from apps.products.models import Product
 from apps.tables.models import Table
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login ,logout
 from rest_framework import (mixins, response, routers, serializers, status,
                             views, viewsets)
 
@@ -19,6 +19,13 @@ class LoginView(views.APIView):
             return response.Response(status=status.HTTP_200_OK)
         else:
             return response.Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(views.APIView):
+    def post(self, request, format=None):
+        logout(request)
+        return response.Response(status=status.HTTP_200_OK)
+
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
