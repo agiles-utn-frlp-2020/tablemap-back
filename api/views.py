@@ -13,7 +13,7 @@ class LoginView(views.APIView):
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
-        
+
         if user is not None:
             login(request, user)
             return response.Response(status=status.HTTP_200_OK)
@@ -36,7 +36,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 class TableViewSet(viewsets.ModelViewSet):
     queryset = Table.objects.all()
     serializer_class = TableSerializer
-    filter_fields = ["id", "x", "y", "orders", "join_with"]
+    filter_fields = ["id", "name", "x", "y", "orders", "join_with"]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
