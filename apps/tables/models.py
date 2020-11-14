@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Table(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, default="Nueva mesa")
     x = models.IntegerField()
     y = models.IntegerField()
     orders = models.ManyToManyField("products.Product", through="orders.Order")
