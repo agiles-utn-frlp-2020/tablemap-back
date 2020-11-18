@@ -1,11 +1,13 @@
-from apps.orders.models import Order
+from apps.orders.models import Order, ProductOrder
 from apps.products.models import Product
 from apps.tables.models import Table
 from django.contrib.auth import authenticate, login, logout
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (mixins, response, routers, serializers, status,
                             views, viewsets)
 
-from .serializers import OrderSerializer, ProductSerializer, TableSerializer
+from .serializers import (OrderSerializer, ProductOrderSerializer,
+                          ProductSerializer, TableSerializer)
 
 
 class LoginView(views.APIView):
@@ -30,15 +32,20 @@ class LogoutView(views.APIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    filter_fields = ["id", "name",  "price"]
 
 
 class TableViewSet(viewsets.ModelViewSet):
     queryset = Table.objects.all()
     serializer_class = TableSerializer
-    filter_fields = ["id", "name", "x", "y", "orders", "join_with"]
 
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['table']
+
+
+class ProductOrderViewSet(viewsets.ModelViewSet):
+    queryset = ProductOrder.objects.all()
+    serializer_class = ProductOrderSerializer

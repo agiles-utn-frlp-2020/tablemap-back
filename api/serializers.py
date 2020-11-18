@@ -1,23 +1,55 @@
-from rest_framework import serializers
-
-from apps.orders.models import Order
+from apps.orders.models import Order, ProductOrder
 from apps.products.models import Product
 from apps.tables.models import Table
+from rest_framework import serializers
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    price = serializers.DecimalField(max_digits=5, decimal_places=2)
+
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "image",
+            "price"
+        )
 
 
 class TableSerializer(serializers.ModelSerializer):
+    orders = serializers.SerializerMethodField()
+
+    def get_orders(self, obj):
+        return obj.order_set.all().values_list("id", flat=True).order_by("-id")
+
     class Meta:
         model = Table
-        fields = "__all__"
+        fields = (
+            "id",
+            "name",
+            "x",
+            "y",
+            "join_with",
+            "orders"
+        )
 
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = "__all__"
+        fields = (
+            "table",
+            "products",
+            "total"
+        )
+
+
+class ProductOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductOrder
+        fields = (
+            "quantity",
+            "product",
+            "order",
+        )

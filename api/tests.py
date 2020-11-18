@@ -1,11 +1,9 @@
+from apps.orders.models import Order, ProductOrder
+from apps.products.models import Product
+from apps.tables.models import Table
 from django.urls import reverse
-
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from apps.tables.models import Table
-from apps.products.models import Product
-from apps.orders.models import Order
 
 
 class TableMapTests(APITestCase):
@@ -13,11 +11,13 @@ class TableMapTests(APITestCase):
         tables_url = reverse("tables-list")
         products_url = reverse("products-list")
         orders_url = reverse("orders-list")
+        productorder_url = reverse("product-order-list")
 
         # create tables
         data = {
             "x": 1,
-            "y": 1
+            "y": 1,
+            "name": "Mesa 1"
         }
         response = self.client.post(tables_url, data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
@@ -39,6 +39,7 @@ class TableMapTests(APITestCase):
             [
                 {
                     "id": 1,
+                    "name": "Mesa 1",
                     "x": 1,
                     "y": 1,
                     "orders": [],
@@ -46,6 +47,7 @@ class TableMapTests(APITestCase):
                 },
                 {
                     "id": 2,
+                    "name": "Nueva mesa",
                     "x": 2,
                     "y": 2,
                     "orders": [],
@@ -94,10 +96,8 @@ class TableMapTests(APITestCase):
             ]
         )
 
-        # create new order
+        # open table (creating a new order)
         data = {
-            "quantity": 5,
-            "product": 1,  # Birra
             "table": 1
         }
         response = self.client.post(orders_url, data, format="json")
@@ -111,10 +111,43 @@ class TableMapTests(APITestCase):
             response.json(), 
             {
                 "id": 1,
+                "name": "Mesa 1",
                 "x": 1,
                 "y": 1,
                 "orders": [1],
                 "join_with": None
+            }
+        )
+
+        # create new product order
+        data = {
+            "order": 1,
+            "product": 1,
+            "quantity": 5,
+        }
+        response = self.client.post(productorder_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ProductOrder.objects.count(), 1)
+
+        # create a second product order
+        data = {
+            "order": 1,
+            "product": 2,
+            "quantity": 3,
+        }
+        response = self.client.post(productorder_url, data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ProductOrder.objects.count(), 2)
+
+        # get the total amount at the moment
+        response = self.client.get(orders_url, {"table": 1}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(
+            response.json()[0],
+            {
+                "table": 1,
+                "products": [1, 2],
+                "total": 99.99 * 5 + 120.00 * 3
             }
         )
 
@@ -132,6 +165,7 @@ class TableMapTests(APITestCase):
             response.json(), 
             {
                 "id": 1,
+                "name": "Mesa 1",
                 "x": 1,
                 "y": 1,
                 "orders": [1],
@@ -146,6 +180,7 @@ class TableMapTests(APITestCase):
             response.json(),
             {
                 "id": 2,
+                "name": "Nueva mesa",
                 "x": 2,
                 "y": 2,
                 "orders": [],
@@ -167,9 +202,32 @@ class TableMapTests(APITestCase):
             response.json(),
             {
                 "id": 1,
+                "name": "Mesa 1",
                 "x": 1,
                 "y": 1,
                 "orders": [1],
+                "join_with": None
+            }
+        )
+
+        # close table (remove relationship)
+        data = {
+            "table": None
+        }
+        response = self.client.patch(reverse("orders-detail", args=[Order.objects.first().id]), data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # get the table
+        response = self.client.get(tables_url, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertDictEqual(
+            response.json()[0],
+            {
+                "id": 1,
+                "name": "Mesa 1",
+                "x": 1,
+                "y": 1,
+                "orders": [],
                 "join_with": None
             }
         )
