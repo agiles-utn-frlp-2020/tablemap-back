@@ -145,6 +145,7 @@ class TableMapTests(APITestCase):
         self.assertDictEqual(
             response.json()[0],
             {
+                "id": 1,
                 "table": 1,
                 "products": [1, 2],
                 "total": 99.99 * 5 + 120.00 * 3

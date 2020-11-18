@@ -39,6 +39,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = (
+            "id",
             "table",
             "products",
             "total"
@@ -49,6 +50,7 @@ class ProductOrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductOrder
         fields = (
+            "id",
             "quantity",
             "product",
             "order",
