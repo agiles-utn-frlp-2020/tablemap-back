@@ -36,12 +36,17 @@ class TableSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    product_orders = serializers.SerializerMethodField()
+
+    def get_product_orders(self, obj):
+        return ProductOrder.objects.filter(order=obj).values_list("id", flat=True)
+
     class Meta:
         model = Order
         fields = (
             "id",
             "table",
-            "products",
+            "product_orders",
             "total"
         )
 

@@ -147,7 +147,7 @@ class TableMapTests(APITestCase):
             {
                 "id": 1,
                 "table": 1,
-                "products": [1, 2],
+                "product_orders": [1, 2],
                 "total": 99.99 * 5 + 120.00 * 3
             }
         )
