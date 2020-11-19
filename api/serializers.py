@@ -39,7 +39,7 @@ class OrderSerializer(serializers.ModelSerializer):
     product_orders = serializers.SerializerMethodField()
 
     def get_product_orders(self, obj):
-        return ProductOrder.objects.filter(order=obj).values_list("id", flat=True)
+        return ProductOrder.objects.filter(order=obj).values("product", "quantity")
 
     class Meta:
         model = Order
