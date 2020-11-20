@@ -5,9 +5,10 @@ from django.contrib.auth import authenticate, login, logout
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (mixins, response, routers, serializers, status,
                             views, viewsets)
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
-from .serializers import (OrderSerializer, ProductOrderSerializer,
-                          ProductSerializer, TableSerializer)
+from .serializers import OrderSerializer, ProductSerializer, TableSerializer
 
 
 class LoginView(views.APIView):
@@ -43,9 +44,25 @@ class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['table']
 
+    @action(detail=True, methods=['post'])
+    def append(self, request, pk=None):
+        order = self.get_object()
+        product = Product.objects.get(id=request.data.get("product"))
+        quantity = request.data.get("quantity")
 
-class ProductOrderViewSet(viewsets.ModelViewSet):
-    queryset = ProductOrder.objects.all()
-    serializer_class = ProductOrderSerializer
+        if product and quantity:
+            obj, created = ProductOrder.objects.get_or_create(
+                product=product,
+                order=order
+            )
+
+            obj.quantity = quantity
+            obj.save()
+
+            if created:
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)

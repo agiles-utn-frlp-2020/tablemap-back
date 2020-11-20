@@ -11,7 +11,6 @@ class TableMapTests(APITestCase):
         tables_url = reverse("tables-list")
         products_url = reverse("products-list")
         orders_url = reverse("orders-list")
-        productorder_url = reverse("product-order-list")
 
         # create tables
         data = {
@@ -42,7 +41,7 @@ class TableMapTests(APITestCase):
                     "name": "Mesa 1",
                     "x": 1,
                     "y": 1,
-                    "orders": [],
+                    "order": None,
                     "join_with": None
                 },
                 {
@@ -50,7 +49,7 @@ class TableMapTests(APITestCase):
                     "name": "Nueva mesa",
                     "x": 2,
                     "y": 2,
-                    "orders": [],
+                    "order": None,
                     "join_with": None
                 }
             ]
@@ -114,44 +113,56 @@ class TableMapTests(APITestCase):
                 "name": "Mesa 1",
                 "x": 1,
                 "y": 1,
-                "orders": [1],
+                "order": 1,
                 "join_with": None
             }
         )
 
         # create new product order
         data = {
-            "order": 1,
             "product": 1,
             "quantity": 5,
         }
-        response = self.client.post(productorder_url, data, format="json")
+        response = self.client.post(reverse("orders-append", args=[Order.objects.first().id]), data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(ProductOrder.objects.count(), 1)
 
         # create a second product order
         data = {
-            "order": 1,
             "product": 2,
             "quantity": 3,
         }
-        response = self.client.post(productorder_url, data, format="json")
+        response = self.client.post(reverse("orders-append", args=[Order.objects.first().id]), data, format="json")
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(ProductOrder.objects.count(), 2)
 
-        # get the total amount at the moment
-        response = self.client.get(orders_url, {"table": 1}, format="json")
+        # update the first product
+        data = {
+            "product": 1,
+            "quantity": 4,
+        }
+        response = self.client.post(reverse("orders-append", args=[Order.objects.first().id]), data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(ProductOrder.objects.count(), 2)
+
+        # get the total amount at the moment
+        response = self.client.get(reverse("orders-detail", args=[Order.objects.first().id]), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        product_1 = Product.objects.first()
+        product_2 = Product.objects.last()
         self.assertDictEqual(
-            response.json()[0],
+            response.json(),
             {
                 "id": 1,
                 "table": 1,
-                "product_orders": [
-                    {"product": 1, "quantity": 5},
+                "order": [
+                    {"product": 1, "quantity": 4},
                     {"product": 2, "quantity": 3}
                 ],
-                "total": 99.99 * 5 + 120.00 * 3
+                "total": float(
+                    product_1.price * ProductOrder.objects.get(product=product_1).quantity
+                    + product_2.price * ProductOrder.objects.get(product=product_2).quantity
+                )
             }
         )
 
@@ -172,7 +183,7 @@ class TableMapTests(APITestCase):
                 "name": "Mesa 1",
                 "x": 1,
                 "y": 1,
-                "orders": [1],
+                "order": 1,
                 "join_with": 2
             }
         )
@@ -187,7 +198,7 @@ class TableMapTests(APITestCase):
                 "name": "Nueva mesa",
                 "x": 2,
                 "y": 2,
-                "orders": [],
+                "order": None,
                 "join_with": None  # the 1to1 exist on the table moved
             }
         )
@@ -209,7 +220,7 @@ class TableMapTests(APITestCase):
                 "name": "Mesa 1",
                 "x": 1,
                 "y": 1,
-                "orders": [1],
+                "order": 1,
                 "join_with": None
             }
         )
@@ -231,7 +242,7 @@ class TableMapTests(APITestCase):
                 "name": "Mesa 1",
                 "x": 1,
                 "y": 1,
-                "orders": [],
+                "order": None,
                 "join_with": None
             }
         )

@@ -18,11 +18,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class TableSerializer(serializers.ModelSerializer):
-    orders = serializers.SerializerMethodField()
-
-    def get_orders(self, obj):
-        return obj.order_set.all().values_list("id", flat=True).order_by("-id")
-
+    order = serializers.IntegerField(source="order.id", read_only=True)
     class Meta:
         model = Table
         fields = (
@@ -31,14 +27,14 @@ class TableSerializer(serializers.ModelSerializer):
             "x",
             "y",
             "join_with",
-            "orders"
+            "order",
         )
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    product_orders = serializers.SerializerMethodField()
+    order = serializers.SerializerMethodField()
 
-    def get_product_orders(self, obj):
+    def get_order(self, obj):
         return ProductOrder.objects.filter(order=obj).values("product", "quantity")
 
     class Meta:
@@ -46,17 +42,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "table",
-            "product_orders",
-            "total"
-        )
-
-
-class ProductOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductOrder
-        fields = (
-            "id",
-            "quantity",
-            "product",
             "order",
+            "total"
         )

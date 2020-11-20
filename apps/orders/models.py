@@ -3,7 +3,7 @@ from django.db.models import DecimalField, ExpressionWrapper, F, Sum
 
 
 class Order(models.Model):
-    table = models.ForeignKey("tables.Table", null=True, on_delete=models.CASCADE)
+    table = models.OneToOneField("tables.Table", on_delete=models.CASCADE, null=True, blank=True)
     products = models.ManyToManyField(
         "products.Product",
         through="ProductOrder",
@@ -25,6 +25,6 @@ class Order(models.Model):
 
 
 class ProductOrder(models.Model):
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(null=True)
     product = models.ForeignKey("products.Product", on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
