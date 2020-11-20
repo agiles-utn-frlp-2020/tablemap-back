@@ -8,6 +8,9 @@ from rest_framework.test import APITestCase
 
 
 class TableMapTests(APITestCase):
+    maxDiff = None  # to see the full details in case of failure
+
+
     def test_login(self):
         user = User.objects.create(username="foo")
         user.set_password("bar")
@@ -23,6 +26,48 @@ class TableMapTests(APITestCase):
         response = self.client.post(reverse("login"), {"username": "foo", "password": "bar"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {"role": "encargado"})
+
+
+    def test_stats(self):
+        table_1 = Table.objects.create(x=1, y=1, name="foo")
+        table_2 = Table.objects.create(x=2, y=2, name="bar")
+
+        product_1 = Product.objects.create(name="Foo", price=11.11, image="https://foo.com/bar.png")
+        product_2 = Product.objects.create(name="Bar", price=22.22, image="https://foo.com/bar.png")
+        product_3 = Product.objects.create(name="Baz", price=33.33, image="https://foo.com/bar.png")
+
+        order_1 = Order.objects.create(table=table_1)
+        order_2 = Order.objects.create(table=table_2)
+
+        product_order_1 = ProductOrder.objects.create(quantity=10, product=Product.objects.get(id=1), order=Order.objects.get(id=1))
+        product_order_2 = ProductOrder.objects.create(quantity=2, product=Product.objects.get(id=2), order=Order.objects.get(id=2))
+        product_order_3 = ProductOrder.objects.create(quantity=3, product=Product.objects.get(id=3), order=Order.objects.get(id=1))
+        product_order_4 = ProductOrder.objects.create(quantity=10, product=Product.objects.get(id=1), order=Order.objects.get(id=2))
+
+        response = self.client.get(reverse("stats"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.json(),
+            {
+                "product_with_more_purchases": {
+                    "id": product_1.id,
+                    "name": product_1.name,
+                    "price": str(product_1.price),
+                    "image": product_1.image,
+                    "purchases": 20  # new field
+                },
+                "table_which_earn_more_money": {
+                    "id": table_1.id,
+                    "name": table_1.name,
+                    "x": table_1.x,
+                    "y": table_1.y,
+                    "join_with": table_1.join_with,
+                    "order": table_1.order.id,
+                    "money": 44.44  # new field
+                }
+            }
+        )
+
 
     def test_basic_flow(self):
         tables_url = reverse("tables-list")

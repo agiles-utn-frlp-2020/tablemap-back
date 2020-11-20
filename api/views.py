@@ -2,6 +2,7 @@ from apps.orders.models import Order, ProductOrder
 from apps.products.models import Product
 from apps.tables.models import Table
 from django.contrib.auth import authenticate, login, logout
+from django.db.models import Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (mixins, response, routers, serializers, status,
                             views, viewsets)
@@ -32,6 +33,28 @@ class LogoutView(views.APIView):
         logout(request)
         return Response(status=status.HTTP_200_OK)
 
+
+class StatsView(views.APIView):
+    def get(self, request, format=None):
+        product_with_more_purchases = Product.objects.annotate(
+            purchases=Sum("productorder__quantity")
+        ).order_by("-purchases")[0]
+        product = ProductSerializer(product_with_more_purchases).data
+        product["purchases"] = product_with_more_purchases.purchases
+
+        table_which_earn_more_money = Table.objects.annotate(
+            money=Sum("order__productorder__product__price")
+        ).order_by("-money")[0]
+        table = TableSerializer(table_which_earn_more_money).data
+        table["money"] = table_which_earn_more_money.money
+
+        return Response(
+            {
+                "product_with_more_purchases": product,
+                "table_which_earn_more_money": table
+            },
+            status=status.HTTP_200_OK
+        )
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
