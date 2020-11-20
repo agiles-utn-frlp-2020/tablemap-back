@@ -27,6 +27,7 @@ class TableSerializer(serializers.ModelSerializer):
             "x",
             "y",
             "join_with",
+            "join_direction",
             "order",
         )
 
