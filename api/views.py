@@ -19,15 +19,18 @@ class LoginView(views.APIView):
 
         if user is not None:
             login(request, user)
-            return response.Response(status=status.HTTP_200_OK)
+            return Response(
+                {"role": "encargado" if user.is_superuser else "mozo"},
+                status=status.HTTP_200_OK
+            )
         else:
-            return response.Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(views.APIView):
     def post(self, request, format=None):
         logout(request)
-        return response.Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)
 
 
 class ProductViewSet(viewsets.ModelViewSet):

@@ -1,12 +1,29 @@
 from apps.orders.models import Order, ProductOrder
 from apps.products.models import Product
 from apps.tables.models import Table
+from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 
 class TableMapTests(APITestCase):
+    def test_login(self):
+        user = User.objects.create(username="foo")
+        user.set_password("bar")
+        user.save()
+
+        response = self.client.post(reverse("login"), {"username": "foo", "password": "bar"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {"role": "mozo"})
+
+        user.is_superuser = True
+        user.save()
+
+        response = self.client.post(reverse("login"), {"username": "foo", "password": "bar"}, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {"role": "encargado"})
+
     def test_basic_flow(self):
         tables_url = reverse("tables-list")
         products_url = reverse("products-list")
