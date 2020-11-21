@@ -45,7 +45,7 @@ class StatsView(views.APIView):
         product_more["purchases"] = products.first().purchases
         product_less["purchases"] = products.last().purchases
 
-        orders = sorted(Order.objects.all(), key=lambda t: t.total, reverse=True)
+        orders = sorted(Order.objects.all(), key=lambda t: t.total if t.total else 0, reverse=True)
 
         table_more = TableSerializer(orders[0].table).data
         table_less = TableSerializer(orders[-1].table).data

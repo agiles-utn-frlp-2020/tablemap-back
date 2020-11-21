@@ -62,6 +62,7 @@ class TableMapTests(APITestCase):
                     "x": table_1.x,
                     "y": table_1.y,
                     "join_with": table_1.join_with,
+                    "join_direction": None,
                     "order": table_1.order.id,
                     "money": 211.09  # new field
                 },
@@ -78,6 +79,7 @@ class TableMapTests(APITestCase):
                     "x": table_2.x,
                     "y": table_2.y,
                     "join_with": table_2.join_with,
+                    "join_direction": None,
                     "order": table_2.order.id,
                     "money": 155.54  # new field
                 }
@@ -120,7 +122,8 @@ class TableMapTests(APITestCase):
                     "x": 1,
                     "y": 1,
                     "order": None,
-                    "join_with": None
+                    "join_with": None,
+                    "join_direction": None,
                 },
                 {
                     "id": 2,
@@ -128,7 +131,8 @@ class TableMapTests(APITestCase):
                     "x": 2,
                     "y": 2,
                     "order": None,
-                    "join_with": None
+                    "join_with": None,
+                    "join_direction": None,
                 }
             ]
         )
@@ -192,7 +196,8 @@ class TableMapTests(APITestCase):
                 "x": 1,
                 "y": 1,
                 "order": 1,
-                "join_with": None
+                "join_with": None,
+                "join_direction": None,
             }
         )
 
@@ -262,7 +267,8 @@ class TableMapTests(APITestCase):
                 "x": 1,
                 "y": 1,
                 "order": 1,
-                "join_with": 2
+                "join_with": 2,
+                "join_direction": None,
             }
         )
 
@@ -277,7 +283,8 @@ class TableMapTests(APITestCase):
                 "x": 2,
                 "y": 2,
                 "order": None,
-                "join_with": None  # the 1to1 exist on the table moved
+                "join_with": None,  # the 1to1 exist on the table moved,
+                "join_direction": None,
             }
         )
 
@@ -299,7 +306,8 @@ class TableMapTests(APITestCase):
                 "x": 1,
                 "y": 1,
                 "order": 1,
-                "join_with": None
+                "join_with": None,
+                "join_direction": None,
             }
         )
 
@@ -321,6 +329,7 @@ class TableMapTests(APITestCase):
                 "x": 1,
                 "y": 1,
                 "order": None,
-                "join_with": None
+                "join_with": None,
+                "join_direction": None,
             }
         )
