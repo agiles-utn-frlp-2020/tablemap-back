@@ -2,13 +2,12 @@ from apps.orders.models import Order, ProductOrder
 from apps.products.models import Product
 from apps.tables.models import Table
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Sum
+from django.db.models import F, Sum
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import (mixins, response, routers, serializers, status,
                             views, viewsets)
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
 from .serializers import OrderSerializer, ProductSerializer, TableSerializer
 
 
@@ -36,22 +35,30 @@ class LogoutView(views.APIView):
 
 class StatsView(views.APIView):
     def get(self, request, format=None):
-        product_with_more_purchases = Product.objects.annotate(
+        products = Product.objects.annotate(
             purchases=Sum("productorder__quantity")
-        ).order_by("-purchases")[0]
-        product = ProductSerializer(product_with_more_purchases).data
-        product["purchases"] = product_with_more_purchases.purchases
+        ).order_by("-purchases")
 
-        table_which_earn_more_money = Table.objects.annotate(
-            money=Sum("order__productorder__product__price")
-        ).order_by("-money")[0]
-        table = TableSerializer(table_which_earn_more_money).data
-        table["money"] = table_which_earn_more_money.money
+        product_more = ProductSerializer(products.first()).data
+        product_less = ProductSerializer(products.last()).data
+
+        product_more["purchases"] = products.first().purchases
+        product_less["purchases"] = products.last().purchases
+
+        orders = sorted(Order.objects.all(), key=lambda t: t.total, reverse=True)
+
+        table_more = TableSerializer(orders[0].table).data
+        table_less = TableSerializer(orders[-1].table).data
+
+        table_more["money"] = orders[0].total
+        table_less["money"] = orders[-1].total
 
         return Response(
             {
-                "product_with_more_purchases": product,
-                "table_which_earn_more_money": table
+                "product_more": product_more,
+                "product_less": product_less,
+                "table_more": table_more,
+                "table_less":table_less
             },
             status=status.HTTP_200_OK
         )

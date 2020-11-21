@@ -49,21 +49,37 @@ class TableMapTests(APITestCase):
         self.assertEqual(
             response.json(),
             {
-                "product_with_more_purchases": {
+                "product_more": {
                     "id": product_1.id,
                     "name": product_1.name,
                     "price": str(product_1.price),
                     "image": product_1.image,
                     "purchases": 20  # new field
                 },
-                "table_which_earn_more_money": {
+                "table_more": {
                     "id": table_1.id,
                     "name": table_1.name,
                     "x": table_1.x,
                     "y": table_1.y,
                     "join_with": table_1.join_with,
                     "order": table_1.order.id,
-                    "money": 44.44  # new field
+                    "money": 211.09  # new field
+                },
+                "product_less": {
+                    "id": product_2.id,
+                    "name": product_2.name,
+                    "price": str(product_2.price),
+                    "image": product_2.image,
+                    "purchases": 2  # new field
+                },
+                "table_less": {
+                    "id": table_2.id,
+                    "name": table_2.name,
+                    "x": table_2.x,
+                    "y": table_2.y,
+                    "join_with": table_2.join_with,
+                    "order": table_2.order.id,
+                    "money": 155.54  # new field
                 }
             }
         )
