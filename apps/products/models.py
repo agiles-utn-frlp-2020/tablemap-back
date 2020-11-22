@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=200)
+    name = models.CharField(max_length=200, unique=True)
     image = models.URLField(max_length=755)
     price = models.DecimalField(max_digits=5, decimal_places=2)
 
