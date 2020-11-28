@@ -20,8 +20,8 @@ class TableMapTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), {"role": "mozo"})
 
-        user.is_superuser = True
-        user.save()
+        # user.is_superuser = True
+        # user.save()
 
         response = self.client.post(reverse("login"), {"username": "foo", "password": "bar"}, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
